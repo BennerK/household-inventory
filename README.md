@@ -6,7 +6,7 @@ A shared household inventory tracker for the family. Tracks the freezer, pantry,
 - 4 inventory sections with themed designs (icicles, hanging pantry items, cobwebs, forest)
 - Shared shopping list with check-off
 - Specialty shopping with per-store sub-lists
-- Dark/light mode toggle
+- Dark/light mode toggle  
 - Syncs between two phones
 - Installable to phone home screen (works like a native app)
 
