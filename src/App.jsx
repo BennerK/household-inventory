@@ -1,23 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
 
+const JSONBIN_ID  = "6a3b45d6f5f4af5e2926a573";
+const JSONBIN_KEY = "$2a$10$jA5erYBhqBvnFUW/T7h7m.hi96/9q9MgceT5iiTn49YO.Rveek7kW";
 const DB_KEY = "inventory_app_data_v3";
 
 const safeStorage = {
   get: async (key, shared = true) => {
     try {
-      if (typeof window !== "undefined" && window.storage && typeof window.storage.get === "function") {
-        return await window.storage.get(key, shared);
-      }
-    } catch (e) {}
-    try { const v = localStorage.getItem(key); return v ? { value: v } : null; } catch (e) { return null; }
+      const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
+        headers: { "X-Master-Key": JSONBIN_KEY }
+      });
+      const j = await r.json();
+      const val = j.record?.[key];
+      return val ? { value: val } : null;
+    } catch (e) { return null; }
   },
   set: async (key, val, shared = true) => {
     try {
-      if (typeof window !== "undefined" && window.storage && typeof window.storage.set === "function") {
-        return await window.storage.set(key, val, shared);
-      }
+      const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
+        headers: { "X-Master-Key": JSONBIN_KEY }
+      });
+      const j = await r.json();
+      const record = j.record || {};
+      record[key] = val;
+      await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "X-Master-Key": JSONBIN_KEY },
+        body: JSON.stringify(record)
+      });
     } catch (e) {}
-    try { localStorage.setItem(key, val); } catch (e) {}
   }
 };
 
